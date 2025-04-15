@@ -1,23 +1,8 @@
-# Uber-Clone
-A full stack project for developing an Uber clone using the MERN stack.
-
-## Project Description
-
-This project is a comprehensive clone of the Uber ride-hailing platform, built using MongoDB, Express.js, React.js, and Node.js (MERN stack). It aims to replicate core functionalities of Uber, including user registration, authentication, ride booking, real-time updates, and more. The backend provides RESTful APIs for user management, ride operations, and real-time communication using sockets. The frontend offers a responsive and interactive user interface for both riders and drivers.
-
-Key features include:
-- Secure user registration and authentication
-- Real-time ride requests and driver updates
-- RESTful API endpoints for all major operations
-- Scalable architecture for future enhancements
-
-This project is intended for educational purposes and as a demonstration of full stack development best practices.
-
 # Backend API Documentation
 
-# Rgisters a new user.
-
 ## POST `/users/register`
+
+Registers a new user.
 
 ### Request Body
 
