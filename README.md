@@ -15,9 +15,13 @@ This project is intended for educational purposes and as a demonstration of full
 
 # Backend API Documentation
 
-# Rgisters a new user.
+---
 
 ## POST `/users/register`
+
+### Description
+
+Registers a new user in the system. This endpoint accepts user details, validates them, hashes the password, and creates a new user record. If the registration is successful, it returns a JWT token and the user data. If the email already exists or validation fails, it returns an appropriate error.
 
 ### Request Body
 
@@ -32,10 +36,10 @@ Send a JSON object with the following fields:
 }
 ```
 
-- `firstname` (string, required)
-- `lastname` (string, optional)
-- `email` (string, required, must be a valid email)
-- `password` (string, required, minimum 6 characters)
+- `firstname` (string, required): The user's first name.
+- `lastname` (string, optional): The user's last name.
+- `email` (string, required): Must be a valid email address.
+- `password` (string, required): Minimum 6 characters.
 
 ### Responses
 
@@ -63,6 +67,76 @@ Send a JSON object with the following fields:
   ```json
   {
     "message": "User with this email already exists.",
+    "success": false
+  }
+  ```
+
+- **500 Internal Server Error**  
+  Unexpected server error.
+  ```json
+  {
+    "message": "Internal service error.",
+    "success": false
+  }
+  ```
+
+---
+
+## POST `/users/login`
+
+### Description
+
+Authenticates an existing user using email and password. If the credentials are valid, returns a JWT token and user data. Handles validation errors, incorrect credentials, and user-not-found scenarios.
+
+### Request Body
+
+Send a JSON object with the following fields:
+
+```json
+{
+  "email": "john@example.com",
+  "password": "yourpassword"
+}
+```
+
+- `email` (string, required): Must be a valid email address.
+- `password` (string, required): Minimum 6 characters.
+
+### Responses
+
+- **200 OK**  
+  User logged in successfully. Returns a JSON object with a JWT token and user data.
+  ```json
+  {
+    "token": "<jwt_token>",
+    "user": { ... },
+    "message": "User logged in successfully",
+    "success": true
+  }
+  ```
+
+- **400 Bad Request**  
+  Validation failed (e.g., invalid email, password too short).
+  ```json
+  {
+    "errors": [ ... ]
+  }
+  ```
+
+- **401 Unauthorized**  
+  Invalid credentials.
+  ```json
+  {
+    "message": "Invalid credentials",
+    "success": false
+  }
+  ```
+
+- **404 Not Found**  
+  User not found.
+  ```json
+  {
+    "message": "User not found",
     "success": false
   }
   ```

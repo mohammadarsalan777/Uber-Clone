@@ -8,4 +8,8 @@ router.post('/register', [
     body('password').isLength({min: 6}).withMessage('Password length should be more than 5 characters.')
 ], registerUser)
 
+router.post('/login', [
+    body('email').isEmail().withMessage('Invalid Email'),
+    body('password').isLength({min: 6}).withMessage('Password length should be more than 5 characters.')
+], loginUser)
 export default router
