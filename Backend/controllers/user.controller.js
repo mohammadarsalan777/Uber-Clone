@@ -1,6 +1,7 @@
 import { UserModel } from "../models/user.model.js";
 import { createUser } from "../services/user.service.js";
 import { validationResult } from "express-validator";
+import BlackListedTokenModel from "../models/blackListedToken.model.js";
 
 export const registerUser = async (req, res) => {
     try {
@@ -70,9 +71,7 @@ export const loginUser = async (req, res) => {
                 message: 'User not found',
                 success: false
             })
-        }
-        console.log(user.password, password)
-    
+        }    
 
         // Check if password is correct
         const isMatch = await user.comparePassword(password)
@@ -89,9 +88,31 @@ export const loginUser = async (req, res) => {
         // Remove password and __v from user object before sending response
         user.password = undefined
         user.__v = undefined    
+
+        return res.status(200).cookie('token', token, {
+            httpOnly: true,
+            sameSite: 'strict',
+            maxAge: 24 * 60 * 60 * 1000 // 1 day
+        }).json({
+             user, message: 'User logged in successfully', success: true
+        })
+
+        // return res.status(200).json({
+        //     token, user, message: 'User logged in successfully', success: true
+        // })
         
+    } catch (error) {
+        return res.status(500).json({
+            message: error ||'Internal service error.',
+            success: false
+        })
+    }
+}
+ 
+export const getUserProfile = async (req, res) => {
+    try {
         return res.status(200).json({
-            token, user, message: 'User logged in successfully', success: true
+             message: 'User profile retrieved successfully', success: true, user: req.user
         })
         
     } catch (error) {
@@ -99,6 +120,28 @@ export const loginUser = async (req, res) => {
             message: error ||'Internal service error.',
             success: false
         })
-        
     }
- }
+}
+
+export const logoutUser = async (req, res) => {
+    try {
+        res.clearCookie('token', {
+            httpOnly: true,
+            sameSite: 'strict',
+            maxAge: 24 * 60 * 60 * 1000 // 1 day
+        })
+        const token = req.cookies.token || req.headers.authorization?.split(' ')[1]
+        if (token) {
+            await BlackListedTokenModel.create({ token })
+        }
+        return res.status(200).json({
+            message: 'User logged out successfully', success: true
+        })
+        
+    } catch (error) {
+        return res.status(500).json({
+            message: error ||'Internal service error.',
+            success: false
+        })
+    }
+}

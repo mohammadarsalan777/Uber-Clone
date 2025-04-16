@@ -149,3 +149,85 @@ Send a JSON object with the following fields:
     "success": false
   }
   ```
+    ---
+  
+  ## GET `/users/profile`
+  
+  ### Description
+  
+  Retrieves the authenticated user's profile information. This endpoint requires a valid JWT token to be sent in the request (usually as a cookie or in the `Authorization` header). Returns the user's profile data if authenticated.
+  
+  ### Authentication
+  
+  - Requires a valid JWT token (sent as a cookie named `token` or in the `Authorization` header as `Bearer <token>`).
+  
+  ### Responses
+  
+  - **200 OK**  
+    User profile retrieved successfully.
+    ```json
+    {
+      "message": "User profile retrieved successfully",
+      "success": true,
+      "user": { ... }
+    }
+    ```
+  
+  - **401 Unauthorized**  
+    Missing or invalid authentication token.
+    ```json
+    {
+      "message": "Not authorized, token failed",
+      "success": false
+    }
+    ```
+  
+  - **500 Internal Server Error**  
+    Unexpected server error.
+    ```json
+    {
+      "message": "Internal service error.",
+      "success": false
+    }
+    ```
+  
+  ---
+  
+  ## GET `/users/logout`
+  
+  ### Description
+  
+  Logs out the authenticated user by clearing the authentication token cookie and blacklisting the token. Requires the user to be authenticated.
+  
+  ### Authentication
+  
+  - Requires a valid JWT token (sent as a cookie named `token` or in the `Authorization` header as `Bearer <token>`).
+  
+  ### Responses
+  
+  - **200 OK**  
+    User logged out successfully.
+    ```json
+    {
+      "message": "User logged out successfully",
+      "success": true
+    }
+    ```
+  
+  - **401 Unauthorized**  
+    Missing or invalid authentication token.
+    ```json
+    {
+      "message": "Not authorized, token failed",
+      "success": false
+    }
+    ```
+  
+  - **500 Internal Server Error**  
+    Unexpected server error.
+    ```json
+    {
+      "message": "Internal service error.",
+      "success": false
+    }
+    ```
