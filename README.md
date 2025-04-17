@@ -231,3 +231,247 @@ Send a JSON object with the following fields:
       "success": false
     }
     ```
+
+
+## POST `/captains/register`
+
+### Description
+
+Registers a new captain (driver) in the system. This endpoint accepts captain details, validates them, hashes the password, and creates a new captain record. If registration is successful, it returns the captain data (excluding password) and sets a JWT token as an HTTP-only cookie.
+
+### Request Body
+
+Send a JSON object with the following structure:
+
+```json
+{
+  "fullname": {
+    "firstname": "Jane",
+    "lastname": "Doe"
+  },
+  "email": "jane@example.com",
+  "password": "yourpassword",
+  "vehicle": {
+    "color": "Black",
+    "plate": "ABC123",
+    "capacity": 4,
+    "vehicleType": "car"
+  }
+}
+```
+
+- `fullname.firstname` (string, required): Captain's first name.
+- `fullname.lastname` (string, optional): Captain's last name.
+- `email` (string, required): Must be a valid email address.
+- `password` (string, required): Minimum 6 characters.
+- `vehicle.color` (string, required): Vehicle color.
+- `vehicle.plate` (string, required): Vehicle plate number (must be unique).
+- `vehicle.capacity` (integer, required): Number of seats (1-8).
+- `vehicle.vehicleType` (string, required): Must be one of `car`, `motorcycle`, or `bike`.
+
+### Responses
+
+- **201 Created**  
+  Captain registered successfully. Returns captain data (excluding password) and sets a JWT token cookie.
+  ```json
+  {
+    "message": "Captain registered successfully",
+    "captain": {
+      "id": "<captain_id>",
+      "fullname": { "firstname": "Jane", "lastname": "Doe" },
+      "email": "jane@example.com",
+      "vehicle": {
+        "color": "Black",
+        "plate": "ABC123",
+        "capacity": 4,
+        "vehicleType": "car"
+      }
+    }
+  }
+  ```
+
+- **400 Bad Request**  
+  Validation failed (e.g., missing fields, invalid email, etc.).
+  ```json
+  {
+    "error": [ ... ]
+  }
+  ```
+
+- **409 Conflict**  
+  Captain or vehicle plate already exists.
+  ```json
+  {
+    "error": "Captain already exists"
+  }
+  ```
+  or
+  ```json
+  {
+    "error": "Vehicle plate already exists"
+  }
+  ```
+
+- **500 Internal Server Error**  
+  Unexpected server error.
+  ```json
+  {
+    "error": "Internal Server Error",
+    "success": false
+  }
+  ```
+
+---
+
+## POST `/captains/login`
+
+### Description
+
+Authenticates a captain using email and password. If credentials are valid, returns captain data (excluding password) and sets a JWT token as an HTTP-only cookie.
+
+### Request Body
+
+```json
+{
+  "email": "jane@example.com",
+  "password": "yourpassword"
+}
+```
+
+- `email` (string, required): Must be a valid email address.
+- `password` (string, required): Minimum 6 characters.
+
+### Responses
+
+- **200 OK**  
+  Captain logged in successfully. Returns captain data and sets a JWT token cookie.
+  ```json
+  {
+    "message": "Captain logged in successfully",
+    "captain": {
+      "id": "<captain_id>",
+      "fullname": { "firstname": "Jane", "lastname": "Doe" },
+      "email": "jane@example.com",
+      "vehicle": {
+        "color": "Black",
+        "plate": "ABC123",
+        "capacity": 4,
+        "vehicleType": "car"
+      }
+    }
+  }
+  ```
+
+- **400 Bad Request**  
+  Validation failed.
+  ```json
+  {
+    "error": [ ... ]
+  }
+  ```
+
+- **401 Unauthorized**  
+  Invalid credentials.
+  ```json
+  {
+    "error": "Invalid credentials"
+  }
+  ```
+
+- **500 Internal Server Error**  
+  Unexpected server error.
+  ```json
+  {
+    "error": "Internal Server Error",
+    "success": false
+  }
+  ```
+
+---
+
+## GET `/captains/profile`
+
+### Description
+
+Retrieves the authenticated captain's profile information. Requires a valid JWT token (sent as a cookie or in the `Authorization` header).
+
+### Authentication
+
+- Requires a valid JWT token (sent as a cookie named `token` or in the `Authorization` header as `Bearer <token>`).
+
+### Responses
+
+- **200 OK**  
+  Captain profile fetched successfully.
+  ```json
+  {
+    "message": "Captain profile fetched successfully",
+    "captain": { ... }
+  }
+  ```
+
+- **401 Unauthorized**  
+  Missing or invalid authentication token.
+  ```json
+  {
+    "message": "Not authorized, token failed",
+    "success": false
+  }
+  ```
+
+- **500 Internal Server Error**  
+  Unexpected server error.
+  ```json
+  {
+    "error": "Internal Server Error",
+    "success": false
+  }
+  ```
+
+---
+
+## GET `/captains/logout`
+
+### Description
+
+Logs out the authenticated captain by blacklisting the token and clearing the authentication cookie. Requires the captain to be authenticated.
+
+### Authentication
+
+- Requires a valid JWT token (sent as a cookie named `token` or in the `Authorization` header as `Bearer <token>`).
+
+### Responses
+
+- **200 OK**  
+  Captain logged out successfully.
+  ```json
+  {
+    "message": "Captain logged out successfully",
+    "success": true
+  }
+  ```
+
+- **400 Bad Request**  
+  Token not provided.
+  ```json
+  {
+    "message": "Token not provided"
+  }
+  ```
+
+- **401 Unauthorized**  
+  Unauthorized access.
+  ```json
+  {
+    "message": "Unauthorized access"
+  }
+  ```
+
+- **500 Internal Server Error**  
+  Unexpected server error.
+  ```json
+  {
+    "error": "Internal Server Error",
+    "success": false
+  }
+  ```
