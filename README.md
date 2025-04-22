@@ -475,3 +475,5 @@ Logs out the authenticated captain by blacklisting the token and clearing the au
     "success": false
   }
   ```
+
+  
